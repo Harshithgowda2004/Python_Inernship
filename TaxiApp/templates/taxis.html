@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taxi Fleet Details</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>🚖 Fleet Status</h1>
+            <p>Earnings & Trip History</p>
+        </header>
+
+        <main style="max-height: 600px; overflow-y: auto; padding-right: 10px;">
+            {% for taxi in taxis %}
+            <div class="booking-section">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <h3 style="margin: 0; color: var(--primary-color);">Taxi-{{ taxi.id }}</h3>
+                    <span class="taxi-badge" style="position: static; font-size: 1rem; padding: 5px 10px;">
+                        💰 Total: Rs. {{ taxi.earnings }}
+                    </span>
+                </div>
+
+                {% if taxi.bookings %}
+                <table style="width: 100%; border-collapse: collapse; font-size: 0.9rem;">
+                    <thead>
+                        <tr style="background: #eee;">
+                            <th style="padding: 8px; text-align: left;">ID</th>
+                            <th style="padding: 8px; text-align: left;">Cust</th>
+                            <th style="padding: 8px; text-align: left;">From</th>
+                            <th style="padding: 8px; text-align: left;">To</th>
+                            <th style="padding: 8px; text-align: left;">Pick</th>
+                            <th style="padding: 8px; text-align: left;">Drop</th>
+                            <th style="padding: 8px; text-align: left;">Amt</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for b in taxi.bookings %}
+                        <tr style="border-bottom: 1px solid #ddd;">
+                            <td style="padding: 8px;">{{ b[0] }}</td>
+                            <td style="padding: 8px;">{{ b[1] }}</td>
+                            <td style="padding: 8px;">{{ b[2] }}</td>
+                            <td style="padding: 8px;">{{ b[3] }}</td>
+                            <td style="padding: 8px;">{{ b[4] }}</td>
+                            <td style="padding: 8px;">{{ b[5] }}</td>
+                            <td style="padding: 8px;">Rs. {{ b[6] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                {% else %}
+                <p style="color: #888; text-align: center; font-style: italic;">No trips yet.</p>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </main>
+
+        <footer class="controls">
+            <a href="/" class="btn-outline">⬅ Back to Booking</a>
+        </footer>
+    </div>
+</body>
+
+</html>

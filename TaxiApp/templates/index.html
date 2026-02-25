@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>City Taxi Booking</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <div class="app-container">
+        <header>
+            <h1>🚖 Taxi Booking App</h1>
+        </header>
+
+        <main>
+            <!-- Visual Map Section -->
+            <section class="map-section">
+                <div class="map-container">
+                    <div class="road-line"></div>
+                    {% for p in ['A', 'B', 'C', 'D', 'E', 'F'] %}
+                    <div class="location-point" data-point="{{ p }}">
+                        <span class="point-label">{{ p }}</span>
+                    </div>
+                    {% endfor %}
+
+                    {% for taxi in taxis %}
+                    <div class="taxi-icon" id="taxi-{{ taxi.id }}" data-point="{{ taxi.current_point }}">
+                        🚕
+                        <span class="taxi-badge">{{ taxi.id }}</span>
+                    </div>
+                    {% endfor %}
+
+                    <div id="customer-icon" class="customer-icon">🧍</div>
+                </div>
+            </section>
+
+            <!-- Booking Section -->
+            <section class="booking-section">
+                <form method="post" class="booking-form">
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label>Customer ID</label>
+                            <input type="number" name="cid" required placeholder="ID">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Pickup</label>
+                            <select name="pickup">
+                                {% for p in ['A', 'B', 'C', 'D', 'E', 'F'] %}
+                                <option value="{{ p }}">{{ p }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Drop</label>
+                            <select name="drop">
+                                {% for p in ['A', 'B', 'C', 'D', 'E', 'F'] %}
+                                <option value="{{ p }}">{{ p }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Time (Hrs)</label>
+                            <input type="number" name="ptime" required placeholder="Time">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-book">Book Now</button>
+                </form>
+
+                {% if msg %}
+                <div
+                    class="status-message {% if 'Rejected' in msg or 'Invalid' in msg %}error{% else %}success{% endif %}">
+                    {{ msg | safe }}
+                </div>
+                {% endif %}
+            </section>
+
+            <!-- Controls Footer -->
+            <footer class="controls">
+                <a href="/taxis" class="btn-outline">View Fleet</a>
+
+                <form action="/add_taxi" method="post" style="display:inline;">
+                    <button type="submit" class="btn-action btn-add">+ Taxi</button>
+                </form>
+
+                <form action="/remove_taxi" method="post" style="display:inline;">
+                    <button type="submit" class="btn-action btn-remove">- Taxi</button>
+                </form>
+            </footer>
+        </main>
+    </div>
+
+    <script>
+        const points = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+        function getPosition(point) {
+            const index = points.indexOf(point);
+            // Add padding so points aren't on easy edge. 10% padding, 80% usable width.
+            return 10 + (index / (points.length - 1)) * 80;
+        }
+
+        // Initialize positions
+        document.querySelectorAll('.location-point').forEach(el => {
+            el.style.left = getPosition(el.dataset.point) + '%';
+        });
+
+        document.querySelectorAll('.taxi-icon').forEach(el => {
+            // If animation data exists for this taxi, wait for script below.
+            // basic init for static display
+            const point = el.dataset.point;
+            el.style.left = getPosition(point) + '%';
+        });
+
+        // Animation Logic
+        {% if animation_data %}
+        const animData = {{ animation_data | tojson }};
+        const taxiEl = document.getElementById('taxi-' + animData.taxi_id);
+        const customerEl = document.getElementById('customer-icon');
+
+        if (taxiEl) {
+            // 1. Reset Taxi to Start Point
+            taxiEl.style.transition = 'none';
+            taxiEl.style.left = getPosition(animData.start_point) + '%';
+
+            // 2. Show Customer
+            customerEl.style.left = getPosition(animData.pickup_point) + '%';
+            customerEl.style.display = 'block';
+            customerEl.style.opacity = '1';
+
+            // Force reflow
+            void taxiEl.offsetWidth;
+
+            // 3. Animate to Pickup
+            setTimeout(() => {
+                taxiEl.style.transition = 'left 1.5s ease-in-out';
+                taxiEl.style.left = getPosition(animData.pickup_point) + '%';
+
+                // 4. Pickup Pause
+                setTimeout(() => {
+                    customerEl.style.opacity = '0'; // Disappear
+
+                    // 5. Animate to Drop
+                    setTimeout(() => {
+                        taxiEl.style.left = getPosition(animData.drop_point) + '%';
+                        customerEl.style.display = 'none';
+                    }, 500); // short delay for pickup
+
+                }, 1500);
+
+            }, 500);
+        }
+        {% endif %}
+    </script>
+</body>
+
+</html>
