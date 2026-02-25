@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Your Cart</title>
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+
+<div class="container mt-4">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>🛒 Your Cart</h2>
+        <a class="btn btn-secondary btn-sm" href="/products">Continue Shopping</a>
+    </div>
+
+    {% if cart_items %}
+
+    <div class="card shadow-sm">
+        <div class="card-body">
+
+            <table class="table table-bordered align-middle">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Subtotal</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart_items %}
+                    <tr>
+                        <td>{{ item.name }}</td>
+                        <td>₹{{ item.price }}</td>
+                        <td>
+    <div class="d-flex align-items-center justify-content-center">
+
+        <form method="POST"
+              action="/update_quantity/{{ item.cart_id }}/decrease">
+            <button class="btn btn-sm btn-outline-secondary">-</button>
+        </form>
+
+        <span class="mx-2">{{ item.quantity }}</span>
+
+        <form method="POST"
+              action="/update_quantity/{{ item.cart_id }}/increase">
+            <button class="btn btn-sm btn-outline-secondary">+</button>
+        </form>
+
+    </div>
+</td>
+                        <td>₹{{ item.subtotal }}</td>
+                        <td>
+                            <form method="POST" action="/remove_from_cart/{{ item.cart_id }}">
+                                <button class="btn btn-danger btn-sm">
+                                    Remove
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <h4>Total: <span class="text-success">₹{{ total }}</span></h4>
+
+                <button class="btn btn-success"
+                        onclick="checkout()">
+                    Checkout
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    {% else %}
+        <div class="alert alert-info">
+            Your cart is empty.
+        </div>
+    {% endif %}
+
+</div>
+
+<script>
+function checkout() {
+    fetch("/place_order", { method: "POST" })
+        .then(res => res.json())
+        .then(data => {
+            alert(data.message || data.error);
+            window.location.reload();
+        });
+}
+</script>
+
+</body>
+</html>
+{% endblock %}
