@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Modern Blog App</title>
+
+<style>
+body {
+  font-family: Arial;
+  background: #f1f5f9;
+  margin: 0;
+}
+
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+input, textarea, select {
+  width: 100%;
+  padding: 12px;
+  margin: 10px 0;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+button {
+  padding: 10px 16px;
+  background: #4f46e5;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #4338ca;
+}
+
+h2 {
+  margin-bottom: 10px;
+}
+
+h3 {
+  cursor: pointer;
+}
+
+</style>
+
+</head>
+<body>
+
+<div class="container">
+
+<div class="card">
+<h2>Login</h2>
+<select id="role">
+<option value="admin">Admin</option>
+<option value="user">User</option>
+</select>
+<button onclick="setRole()">Login</button>
+</div>
+
+<div class="card" id="adminSection">
+<h2>Create / Edit Blog</h2>
+<input id="title" placeholder="Title">
+<textarea id="content" placeholder="Content"></textarea>
+<input id="author" placeholder="Author">
+<select id="category">
+<option>Tech</option>
+<option>Business</option>
+<option>Lifestyle</option>
+</select>
+<button onclick="addOrUpdatePost()">Save</button>
+</div>
+
+<div class="card">
+<h2>Search</h2>
+<input id="search" oninput="getPosts()">
+
+<h2>Filter</h2>
+<select id="filter" onchange="getPosts()">
+<option value="">All</option>
+<option>Tech</option>
+<option>Business</option>
+<option>Lifestyle</option>
+</select>
+</div>
+
+<div class="card">
+<h2>Blogs</h2>
+<div id="posts"></div>
+</div>
+
+</div>
+
+<script>
+
+const API = "http://127.0.0.1:8000";
+let role = "user";
+let editId = null;
+
+function setRole(){
+  role = document.getElementById("role").value;
+  document.getElementById("adminSection").style.display =
+    role === "admin" ? "block" : "none";
+}
+
+async function addOrUpdatePost(){
+  if(role !== "admin") return alert("Only admin allowed");
+
+  const payload = {
+    title: title.value,
+    content: content.value,
+    author: author.value,
+    category: category.value
+  };
+
+  if(editId){
+    await fetch(API + "/posts/" + editId, {
+      method: "PUT",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+    editId = null;
+  } else {
+    await fetch(API + "/posts", {
+      method: "POST",
+      headers: {"Content-Type":"application/json"},
+      body: JSON.stringify(payload)
+    });
+  }
+
+  clearForm();
+  getPosts();
+}
+
+async function getPosts(){
+  const res = await fetch(API + "/posts");
+  const data = await res.json();
+
+  const postsDiv = document.getElementById("posts");
+  const search = document.getElementById("search").value.toLowerCase();
+  const filter = document.getElementById("filter").value;
+
+  postsDiv.innerHTML = "";
+
+  data.forEach(p => {
+    if(p.title.toLowerCase().includes(search) && (!filter || p.category === filter)){
+      postsDiv.innerHTML += `
+        <div class="card">
+          <h3 onclick="viewPost(${p.id})">${p.title}</h3>
+          <p>${p.content.substring(0,100)}...</p>
+          <small>${p.author} | ${p.category} | ${p.date}</small><br>
+          
+          ${role === 'admin' ? `
+            <button onclick="editPost(${p.id})">Edit</button>
+            <button onclick="deletePost(${p.id})">Delete</button>
+          ` : ''}
+        </div>
+      `;
+    }
+  });
+}
+
+async function deletePost(id){
+  if(role !== "admin") return;
+  await fetch(API + "/posts/" + id, {method:"DELETE"});
+  getPosts();
+}
+
+async function editPost(id){
+  const res = await fetch(API + "/posts/" + id);
+  const p = await res.json();
+
+  title.value = p.title;
+  content.value = p.content;
+  author.value = p.author;
+  category.value = p.category;
+
+  editId = id;
+}
+
+async function viewPost(id){
+  const res = await fetch(API + "/posts/" + id);
+  const p = await res.json();
+
+  alert(`${p.title}\n\n${p.content}\n\nBy ${p.author}`);
+}
+
+function clearForm(){
+  title.value = "";
+  content.value = "";
+  author.value = "";
+}
+
+setRole();
+getPosts();
+
+</script>
+
+</body>
+</html>
