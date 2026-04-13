@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block title %}Trivia Quiz — PixelArcade{% endblock %}
+{% block extra_style %}
+.game-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.game-box{width:100%;max-width:560px}
+.game-title{font-family:var(--font-head);font-size:1.5rem;font-weight:900;letter-spacing:4px;color:var(--neon-pink);text-shadow:0 0 20px var(--neon-pink);text-align:center;margin-bottom:30px}
+.progress-bar{height:5px;background:var(--border);border-radius:3px;margin-bottom:24px}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--neon-pink),var(--neon-purple));border-radius:3px;transition:width .4s}
+.q-num{font-family:var(--font-head);font-size:.7rem;letter-spacing:3px;color:var(--muted);margin-bottom:12px}
+.q-text{font-size:1.15rem;font-weight:600;line-height:1.5;margin-bottom:24px;color:var(--text)}
+.options{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.opt{
+  padding:14px;background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:6px;
+  font-family:var(--font-body);font-size:.95rem;
+  color:var(--text);cursor:pointer;text-align:left;
+  transition:all .2s;
+}
+.opt:hover:not(:disabled){border-color:var(--neon-pink);background:rgba(255,45,120,.06);transform:translateY(-1px)}
+.opt.correct{border-color:#00ff88;background:rgba(0,255,136,.12);color:#00ff88}
+.opt.wrong{border-color:var(--neon-pink);background:rgba(255,45,120,.12);color:var(--neon-pink)}
+.score-display{font-family:var(--font-head);font-size:.8rem;letter-spacing:2px;color:var(--muted);text-align:right;margin-bottom:16px}
+.score-display span{color:var(--neon-yellow)}
+.result-box{text-align:center;padding:20px 0}
+.result-box h2{font-family:var(--font-head);font-size:2rem;letter-spacing:4px;margin-bottom:10px}
+.result-box p{color:var(--muted);margin-bottom:24px;font-size:1rem}
+{% endblock %}
+{% block content %}
+<div class="game-wrap">
+  <div class="game-box card card-glow-pink" id="quiz-area">
+    <div class="game-title">🧠 TRIVIA QUIZ</div>
+    <div class="score-display">SCORE: <span id="live-score">0</span> / 100</div>
+    <div class="progress-bar"><div class="progress-fill" id="progress" style="width:0%"></div></div>
+    <div class="q-num" id="q-num">QUESTION 1 / 10</div>
+    <div class="q-text" id="q-text">Loading...</div>
+    <div class="options" id="options"></div>
+    <div id="result-area"></div>
+  </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+const QUESTIONS = [
+  {q:"What is 12 × 12?", opts:["124","144","148","132"], a:1},
+  {q:"Which planet is closest to the Sun?", opts:["Venus","Earth","Mercury","Mars"], a:2},
+  {q:"What language is spoken in Brazil?", opts:["Spanish","French","Portuguese","Italian"], a:2},
+  {q:"How many sides does a hexagon have?", opts:["5","7","8","6"], a:3},
+  {q:"Who painted the Mona Lisa?", opts:["Michelangelo","Picasso","Da Vinci","Rembrandt"], a:2},
+  {q:"What is the largest ocean?", opts:["Atlantic","Arctic","Indian","Pacific"], a:3},
+  {q:"What is H₂O commonly known as?", opts:["Salt","Water","Oxygen","Hydrogen"], a:1},
+  {q:"What is the fastest land animal?", opts:["Lion","Leopard","Cheetah","Horse"], a:2},
+  {q:"How many continents are there?", opts:["5","6","7","8"], a:2},
+  {q:"Which element has symbol 'Au'?", opts:["Silver","Copper","Gold","Iron"], a:2},
+];
+
+let idx=0, score=0, answered=false;
+
+function showQ(){
+  if(idx>=QUESTIONS.length){showResult();return}
+  const q=QUESTIONS[idx];
+  document.getElementById('q-num').textContent=`QUESTION ${idx+1} / ${QUESTIONS.length}`;
+  document.getElementById('q-text').textContent=q.q;
+  document.getElementById('progress').style.width=(idx/QUESTIONS.length*100)+'%';
+  answered=false;
+  const opts=document.getElementById('options');
+  opts.innerHTML='';
+  q.opts.forEach((o,i)=>{
+    const b=document.createElement('button');
+    b.className='opt'; b.textContent=o;
+    b.onclick=()=>pick(i,b,q.a);
+    opts.appendChild(b);
+  });
+}
+
+function pick(i,el,correct){
+  if(answered) return;
+  answered=true;
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  if(i===correct){
+    el.classList.add('correct');
+    score+=10;
+    document.getElementById('live-score').textContent=score;
+  } else {
+    el.classList.add('wrong');
+    document.querySelectorAll('.opt')[correct].classList.add('correct');
+  }
+  setTimeout(()=>{idx++;showQ()},1200);
+}
+
+function showResult(){
+  document.getElementById('progress').style.width='100%';
+  const area=document.getElementById('quiz-area');
+  const grade=score>=80?'🏆 CHAMPION':score>=60?'⭐ GREAT':score>=40?'👍 DECENT':'💀 KEEP PRACTICING';
+  area.innerHTML=`
+    <div class="game-title">🧠 TRIVIA QUIZ</div>
+    <div class="result-box">
+      <h2 class="glow-pink">${grade}</h2>
+      <p>You scored <strong style="color:var(--neon-yellow)">${score}</strong> out of 100</p>
+      <button class="btn btn-pink" style="padding:14px 40px;font-size:.9rem" onclick="location.reload()">PLAY AGAIN</button>
+      <br><br>
+      <a href="/dashboard" class="btn btn-cyan" style="padding:12px 30px;font-size:.8rem">DASHBOARD</a>
+    </div>`;
+  if(score>0) awardPoints(score);
+}
+
+showQ();
+{% endblock %}

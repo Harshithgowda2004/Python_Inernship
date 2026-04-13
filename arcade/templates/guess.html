@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% block title %}Number Guess — PixelArcade{% endblock %}
+{% block extra_style %}
+.game-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.game-box{width:100%;max-width:480px}
+.game-title{font-family:var(--font-head);font-size:1.6rem;font-weight:900;letter-spacing:4px;color:var(--neon-cyan);text-shadow:0 0 20px var(--neon-cyan);text-align:center;margin-bottom:6px}
+.game-sub{text-align:center;color:var(--muted);letter-spacing:2px;font-size:.85rem;margin-bottom:30px}
+.hint-bar{
+  text-align:center;min-height:40px;
+  font-family:var(--font-head);font-size:1rem;letter-spacing:3px;
+  margin-bottom:24px;transition:all .3s;
+}
+.attempts{display:flex;gap:6px;justify-content:center;flex-wrap:wrap;margin-bottom:24px}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--border)}
+.dot.used{background:var(--neon-cyan)}
+.guess-input{
+  width:100%;padding:16px;text-align:center;font-size:1.8rem;
+  font-family:var(--font-head);letter-spacing:8px;
+  background:rgba(0,245,255,.04);border:1px solid var(--neon-cyan);
+  color:var(--neon-cyan);border-radius:6px;margin-bottom:16px;
+}
+.guess-input:focus{outline:none;box-shadow:0 0 20px rgba(0,245,255,.2)}
+.range-bar{
+  height:6px;background:var(--border);border-radius:3px;margin-bottom:24px;position:relative;overflow:visible;
+}
+.range-fill{height:100%;background:linear-gradient(90deg,var(--neon-cyan),var(--neon-pink));border-radius:3px;transition:width .4s}
+.range-labels{display:flex;justify-content:space-between;font-size:.75rem;color:var(--muted);margin-bottom:20px;font-family:var(--font-head)}
+{% endblock %}
+{% block content %}
+<div class="game-wrap">
+  <div class="game-box card card-glow-cyan">
+    <div class="game-title">🎯 NUMBER GUESS</div>
+    <div class="game-sub">Guess the number between 1 and 100</div>
+
+    <div class="attempts" id="dots"></div>
+    <div class="hint-bar" id="hint">Make your first guess!</div>
+
+    <div class="range-labels"><span id="lo">1</span><span id="hi">100</span></div>
+    <div class="range-bar"><div class="range-fill" id="range-fill" style="width:100%"></div></div>
+
+    <input class="guess-input" id="guess-input" type="number" min="1" max="100" placeholder="??">
+    <button class="btn btn-cyan" style="width:100%;padding:14px;font-size:.9rem" onclick="makeGuess()" id="guess-btn">SUBMIT GUESS</button>
+    <button class="btn btn-pink" style="width:100%;padding:12px;font-size:.8rem;margin-top:10px" onclick="newGame()">NEW GAME</button>
+  </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+const MAX = 7;
+let secret, attempts, lo, hi, done;
+
+function newGame(){
+  secret = Math.floor(Math.random()*100)+1;
+  attempts = 0; lo = 1; hi = 100; done = false;
+  document.getElementById('hint').textContent = 'Make your first guess!';
+  document.getElementById('hint').style.color = 'var(--muted)';
+  document.getElementById('guess-input').value = '';
+  document.getElementById('guess-btn').disabled = false;
+  updateDots(); updateRange();
+}
+
+function updateDots(){
+  const d = document.getElementById('dots');
+  d.innerHTML='';
+  for(let i=0;i<MAX;i++){
+    const dot=document.createElement('div');
+    dot.className='dot'+(i<attempts?' used':'');
+    d.appendChild(dot);
+  }
+}
+
+function updateRange(){
+  document.getElementById('lo').textContent=lo;
+  document.getElementById('hi').textContent=hi;
+  const pct=((hi-lo)/99)*100;
+  document.getElementById('range-fill').style.width=pct+'%';
+}
+
+function makeGuess(){
+  if(done) return;
+  const g = parseInt(document.getElementById('guess-input').value);
+  if(!g||g<1||g>100) return;
+  attempts++;
+  updateDots();
+  const h = document.getElementById('hint');
+  if(g===secret){
+    const pts = Math.max(10, 50 - (attempts-1)*7);
+    h.textContent = `🎉 CORRECT! It was ${secret}! +${pts} pts`;
+    h.style.color='var(--neon-yellow)';
+    done=true;
+    document.getElementById('guess-btn').disabled=true;
+    awardPoints(pts);
+  } else if(attempts>=MAX){
+    h.textContent = `💀 GAME OVER! It was ${secret}`;
+    h.style.color='var(--neon-pink)';
+    done=true;
+    document.getElementById('guess-btn').disabled=true;
+  } else if(g<secret){
+    lo=Math.max(lo,g+1);
+    h.textContent = `📈 TOO LOW! Try higher`;
+    h.style.color='var(--neon-cyan)';
+  } else {
+    hi=Math.min(hi,g-1);
+    h.textContent = `📉 TOO HIGH! Try lower`;
+    h.style.color='var(--neon-pink)';
+  }
+  updateRange();
+  document.getElementById('guess-input').value='';
+}
+
+document.getElementById('guess-input').addEventListener('keydown',e=>{if(e.key==='Enter')makeGuess()});
+newGame();
+{% endblock %}

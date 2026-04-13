@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% block title %}Tic Tac Toe — PixelArcade{% endblock %}
+{% block extra_style %}
+.game-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.game-box{width:100%;max-width:420px;text-align:center}
+.game-title{font-family:var(--font-head);font-size:1.5rem;font-weight:900;letter-spacing:4px;color:var(--neon-yellow);text-shadow:0 0 20px var(--neon-yellow);margin-bottom:6px}
+.status{font-family:var(--font-head);font-size:.85rem;letter-spacing:3px;color:var(--muted);margin-bottom:24px;min-height:24px}
+.board{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+.cell{
+  aspect-ratio:1;background:rgba(255,255,255,.03);
+  border:1px solid var(--border);border-radius:8px;
+  font-family:var(--font-head);font-size:2.5rem;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:all .2s;
+}
+.cell:hover:not(.taken){border-color:var(--neon-yellow);background:rgba(255,230,0,.05)}
+.cell.x{color:var(--neon-cyan);text-shadow:0 0 20px var(--neon-cyan)}
+.cell.o{color:var(--neon-pink);text-shadow:0 0 20px var(--neon-pink)}
+.cell.win{background:rgba(255,230,0,.12);border-color:var(--neon-yellow)}
+.score-row{display:flex;justify-content:center;gap:30px;margin-bottom:24px}
+.score-box{text-align:center}
+.score-box label{display:block;font-family:var(--font-head);font-size:.6rem;letter-spacing:2px;color:var(--muted)}
+.score-box span{font-family:var(--font-head);font-size:1.6rem}
+{% endblock %}
+{% block content %}
+<div class="game-wrap">
+  <div class="game-box card card-glow-cyan">
+    <div class="game-title">⭕ TIC TAC TOE</div>
+    <div class="status" id="status">Your turn (X)</div>
+    <div class="score-row">
+      <div class="score-box"><label>YOU (X)</label><span class="glow-cyan" id="s-x">0</span></div>
+      <div class="score-box"><label>DRAWS</label><span style="color:var(--muted)" id="s-d">0</span></div>
+      <div class="score-box"><label>CPU (O)</label><span class="glow-pink" id="s-o">0</span></div>
+    </div>
+    <div class="board" id="board"></div>
+    <button class="btn btn-yellow" style="width:100%;padding:14px" onclick="newGame()">NEW GAME</button>
+  </div>
+</div>
+{% endblock %}
+{% block extra_script %}
+let board, done, scores={x:0,o:0,d:0};
+const WINS=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+
+function newGame(){
+  board=Array(9).fill('');done=false;
+  document.getElementById('status').textContent='Your turn (X)';
+  document.getElementById('status').style.color='var(--muted)';
+  renderBoard();
+}
+
+function renderBoard(){
+  const b=document.getElementById('board');
+  b.innerHTML='';
+  board.forEach((v,i)=>{
+    const c=document.createElement('div');
+    c.className='cell'+(v?' taken '+v:'');
+    c.textContent=v;
+    c.onclick=()=>play(i);
+    b.appendChild(c);
+  });
+}
+
+function checkWin(b,p){return WINS.find(([a,c,d])=>b[a]===p&&b[c]===p&&b[d]===p)}
+
+function play(i){
+  if(done||board[i]) return;
+  board[i]='X';
+  const w=checkWin(board,'X');
+  if(w){finish('X',w);return}
+  if(board.every(v=>v)){finish(null);return}
+  document.getElementById('status').textContent='CPU thinking...';
+  renderBoard();
+  setTimeout(cpuMove,400);
+}
+
+function cpuMove(){
+  // minimax
+  const best=minimax(board,'O');
+  board[best.idx]='O';
+  const w=checkWin(board,'O');
+  if(w){finish('O',w);return}
+  if(board.every(v=>v)){finish(null);return}
+  document.getElementById('status').textContent='Your turn (X)';
+  renderBoard();
+}
+
+function minimax(b,player){
+  const w=checkWin(b,'O');if(w) return {score:10};
+  const l=checkWin(b,'X');if(l) return {score:-10};
+  if(b.every(v=>v)) return {score:0};
+  const moves=[];
+  b.forEach((v,i)=>{
+    if(!v){
+      const nb=[...b];nb[i]=player;
+      const s=minimax(nb,player==='O'?'X':'O').score;
+      moves.push({idx:i,score:s});
+    }
+  });
+  return player==='O'?moves.reduce((a,c)=>c.score>a.score?c:a):moves.reduce((a,c)=>c.score<a.score?c:a);
+}
+
+function finish(winner,winLine){
+  done=true;
+  const cells=document.querySelectorAll('.cell');
+  if(winLine) winLine.forEach(i=>cells[i].classList.add('win'));
+  const st=document.getElementById('status');
+  if(winner==='X'){
+    scores.x++;st.textContent='🏆 YOU WIN! +75 pts';st.style.color='var(--neon-yellow)';
+    awardPoints(75);
+  } else if(winner==='O'){
+    scores.o++;st.textContent='💀 CPU WINS!';st.style.color='var(--neon-pink)';
+  } else {
+    scores.d++;st.textContent='🤝 DRAW';st.style.color='var(--muted)';
+  }
+  document.getElementById('s-x').textContent=scores.x;
+  document.getElementById('s-o').textContent=scores.o;
+  document.getElementById('s-d').textContent=scores.d;
+  renderBoard();
+}
+
+newGame();
+{% endblock %}

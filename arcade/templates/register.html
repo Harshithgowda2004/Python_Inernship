@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Register — PixelArcade{% endblock %}
+{% block extra_style %}
+.auth-wrap{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 20px}
+.auth-card{width:100%;max-width:400px}
+.auth-title{font-family:var(--font-head);font-size:2rem;font-weight:900;color:var(--neon-pink);text-shadow:0 0 30px var(--neon-pink);letter-spacing:4px;text-align:center;margin-bottom:6px}
+.scanline{width:60px;height:3px;background:linear-gradient(90deg,transparent,var(--neon-pink),transparent);margin:0 auto 24px}
+.auth-sub{text-align:center;color:var(--muted);font-size:.9rem;letter-spacing:2px;margin-bottom:30px}
+.auth-footer{text-align:center;margin-top:20px;font-size:.9rem;color:var(--muted)}
+.auth-footer a{color:var(--neon-cyan);text-decoration:none}
+{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card card card-glow-pink">
+    <div class="auth-title">NEW PLAYER</div>
+    <div class="scanline"></div>
+    <div class="auth-sub">ENTER YOUR DETAILS</div>
+    {% if error %}<div class="error-msg">⚠ {{ error }}</div>{% endif %}
+    <form method="POST" action="/register">
+      <div class="form-group">
+        <label>Choose a Player Tag</label>
+        <input type="text" name="username" required placeholder="e.g. NeonRacer99">
+      </div>
+      <div class="form-group">
+        <label>Secret Code</label>
+        <input type="password" name="password" required placeholder="Min 6 characters">
+      </div>
+      <button type="submit" class="btn btn-pink" style="width:100%;margin-top:8px;font-size:.9rem;padding:14px">
+        CREATE PLAYER
+      </button>
+    </form>
+    <div class="auth-footer">Already registered? <a href="/">Login →</a></div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+{% block title %}Login — PixelArcade{% endblock %}
+{% block extra_style %}
+.auth-wrap{
+  flex:1;display:flex;align-items:center;justify-content:center;
+  padding:40px 20px;
+}
+.auth-card{width:100%;max-width:400px}
+.auth-title{
+  font-family:var(--font-head);font-size:2rem;font-weight:900;
+  color:var(--neon-cyan);text-shadow:0 0 30px var(--neon-cyan);
+  letter-spacing:4px;text-align:center;margin-bottom:6px;
+}
+.auth-sub{text-align:center;color:var(--muted);font-size:.9rem;letter-spacing:2px;margin-bottom:30px}
+.auth-footer{text-align:center;margin-top:20px;font-size:.9rem;color:var(--muted)}
+.auth-footer a{color:var(--neon-pink);text-decoration:none}
+.auth-footer a:hover{text-shadow:0 0 10px var(--neon-pink)}
+.scanline{
+  width:60px;height:3px;
+  background:linear-gradient(90deg,transparent,var(--neon-cyan),transparent);
+  margin:0 auto 24px;
+}
+{% endblock %}
+{% block content %}
+<div class="auth-wrap">
+  <div class="auth-card card card-glow-cyan">
+    <div class="auth-title">PIXEL<span class="glow-pink">ARCADE</span></div>
+    <div class="scanline"></div>
+    <div class="auth-sub">INSERT COIN TO CONTINUE</div>
+    {% if error %}<div class="error-msg">⚠ {{ error }}</div>{% endif %}
+    <form method="POST" action="/login">
+      <div class="form-group">
+        <label>Player Tag</label>
+        <input type="text" name="username" autocomplete="username" required placeholder="Enter your username">
+      </div>
+      <div class="form-group">
+        <label>Secret Code</label>
+        <input type="password" name="password" autocomplete="current-password" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="btn btn-yellow" style="width:100%;margin-top:8px;font-size:.9rem;padding:14px">
+        PRESS START
+      </button>
+    </form>
+    <div class="auth-footer">
+      New player? <a href="/register">Create Account →</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
