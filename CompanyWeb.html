@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Modern Product</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: Arial, sans-serif; }
+    body { line-height: 1.6; }
+    header { background: #0f172a; color: white; padding: 20px; text-align: center; }
+
+    /* Hero */
+    .hero { background: linear-gradient(135deg, #6366f1, #8b5cf6); color: white; padding: 80px 20px; text-align: center; }
+    .hero h1 { font-size: 3rem; margin-bottom: 20px; }
+    .hero p { font-size: 1.2rem; margin-bottom: 30px; }
+    .btn { padding: 12px 25px; background: white; color: #4f46e5; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; }
+
+    /* Features */
+    .features { padding: 60px 20px; text-align: center; }
+    .features h2 { margin-bottom: 40px; }
+    .feature-grid { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .feature { background: #f1f5f9; padding: 20px; border-radius: 10px; width: 250px; }
+
+    /* Testimonials */
+    .testimonials { background: #f8fafc; padding: 60px 20px; text-align: center; }
+    .testimonial-cards { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .card { background: white; padding: 20px; border-radius: 10px; width: 250px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+
+    /* Pricing */
+    .pricing { padding: 60px 20px; text-align: center; }
+    .pricing-plans { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+    .plan { border: 1px solid #ddd; padding: 20px; border-radius: 10px; width: 250px; }
+    .plan h3 { margin-bottom: 10px; }
+    .price { font-size: 2rem; margin: 10px 0; }
+
+    /* Contact */
+    .contact { background: #f1f5f9; padding: 60px 20px; text-align: center; }
+    form { max-width: 400px; margin: auto; }
+    input, textarea { width: 100%; padding: 10px; margin: 10px 0; border-radius: 5px; border: 1px solid #ccc; }
+
+    /* Footer */
+    footer { background: #0f172a; color: white; text-align: center; padding: 20px; }
+
+    @media (max-width: 768px) {
+      .hero h1 { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h2>MyProduct</h2>
+</header>
+
+<section class="hero">
+  <h1>Build Your Future Faster</h1>
+  <p>Modern solution to boost your productivity and scale your business.</p>
+  <button class="btn">Get Started</button>
+</section>
+
+<section class="features">
+  <h2>Features</h2>
+  <div class="feature-grid">
+    <div class="feature">
+      <h3>⚡ Fast</h3>
+      <p>Optimized for speed and performance.</p>
+    </div>
+    <div class="feature">
+      <h3>🔒 Secure</h3>
+      <p>Top-notch security for your data.</p>
+    </div>
+    <div class="feature">
+      <h3>📱 Responsive</h3>
+      <p>Works seamlessly on all devices.</p>
+    </div>
+  </div>
+</section>
+
+<section class="testimonials">
+  <h2>What Our Users Say</h2>
+  <div class="testimonial-cards">
+    <div class="card">
+      <p>"Amazing product! Helped my business grow."</p>
+      <strong>- John</strong>
+    </div>
+    <div class="card">
+      <p>"Super easy to use and very efficient."</p>
+      <strong>- Sarah</strong>
+    </div>
+    <div class="card">
+      <p>"Highly recommend to everyone."</p>
+      <strong>- Alex</strong>
+    </div>
+  </div>
+</section>
+
+<section class="pricing">
+  <h2>Pricing Plans</h2>
+  <div class="pricing-plans">
+    <div class="plan">
+      <h3>Basic</h3>
+      <p class="price">$10/mo</p>
+      <p>Essential features</p>
+      <button class="btn">Choose</button>
+    </div>
+    <div class="plan">
+      <h3>Pro</h3>
+      <p class="price">$25/mo</p>
+      <p>Advanced features</p>
+      <button class="btn">Choose</button>
+    </div>
+    <div class="plan">
+      <h3>Enterprise</h3>
+      <p class="price">$50/mo</p>
+      <p>All features included</p>
+      <button class="btn">Choose</button>
+    </div>
+  </div>
+</section>
+
+<section class="contact">
+  <h2>Contact Us</h2>
+  <form>
+    <input type="text" placeholder="Your Name" required>
+    <input type="email" placeholder="Your Email" required>
+    <textarea rows="4" placeholder="Your Message"></textarea>
+    <button class="btn">Send Message</button>
+  </form>
+</section>
+
+<footer>
+  <p>© 2026 MyProduct. All rights reserved.</p>
+</footer>
+
+</body>
+</html>
