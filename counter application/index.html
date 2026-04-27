@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Counter App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .container {
+      text-align: center;
+      background: #1e293b;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    #value {
+      font-size: 60px;
+      margin: 20px 0;
+      transition: color 0.3s ease;
+    }
+
+    .buttons button {
+      margin: 5px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .increase {
+      background: #22c55e;
+      color: white;
+    }
+
+    .decrease {
+      background: #ef4444;
+      color: white;
+    }
+
+    .reset {
+      background: #3b82f6;
+      color: white;
+    }
+
+    button:hover {
+      opacity: 0.8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h1>🔢 Counter</h1>
+  <div id="value">0</div>
+
+  <div class="buttons">
+    <button class="decrease">Decrease</button>
+    <button class="reset">Reset</button>
+    <button class="increase">Increase</button>
+  </div>
+</div>
+
+<script>
+  let count = 0;
+
+  const value = document.getElementById('value');
+  const decreaseBtn = document.querySelector('.decrease');
+  const increaseBtn = document.querySelector('.increase');
+  const resetBtn = document.querySelector('.reset');
+
+  function updateUI() {
+    value.textContent = count;
+
+    // Conditional styling
+    if (count > 0) {
+      value.style.color = "#22c55e"; // green
+    } else if (count < 0) {
+      value.style.color = "#ef4444"; // red
+    } else {
+      value.style.color = "#ffffff"; // white
+    }
+  }
+
+  increaseBtn.addEventListener('click', () => {
+    count++;
+    updateUI();
+  });
+
+  decreaseBtn.addEventListener('click', () => {
+    count--;
+    updateUI();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    count = 0;
+    updateUI();
+  });
+
+  updateUI();
+</script>
+
+</body>
+</html>
