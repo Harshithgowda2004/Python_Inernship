@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pricing Cards</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      color: white;
+    }
+
+    .container {
+      display: flex;
+      gap: 20px;
+    }
+
+    .card {
+      background: #1e293b;
+      padding: 25px;
+      border-radius: 12px;
+      width: 250px;
+      text-align: center;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+    }
+
+    /* Hover Animation */
+    .card:hover {
+      transform: translateY(-10px) scale(1.05);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    h2 {
+      margin-bottom: 10px;
+    }
+
+    .price {
+      font-size: 32px;
+      margin: 15px 0;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0;
+    }
+
+    ul li {
+      margin: 8px 0;
+    }
+
+    button {
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      background: #3b82f6;
+      color: white;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background: #2563eb;
+    }
+
+    /* Highlighted Card */
+    .featured {
+      background: #3b82f6;
+      transform: scale(1.1);
+    }
+
+    .featured button {
+      background: white;
+      color: #3b82f6;
+    }
+
+    .featured:hover {
+      transform: scale(1.15) translateY(-10px);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Basic -->
+  <div class="card">
+    <h2>Basic</h2>
+    <div class="price">₹199/mo</div>
+    <ul>
+      <li>✔ 5 Projects</li>
+      <li>✔ Email Support</li>
+      <li>✖ Analytics</li>
+    </ul>
+    <button>Choose Plan</button>
+  </div>
+
+  <!-- Standard (Highlighted) -->
+  <div class="card featured">
+    <h2>Standard</h2>
+    <div class="price">₹499/mo</div>
+    <ul>
+      <li>✔ 20 Projects</li>
+      <li>✔ Priority Support</li>
+      <li>✔ Analytics</li>
+    </ul>
+    <button>Best Choice</button>
+  </div>
+
+  <!-- Premium -->
+  <div class="card">
+    <h2>Premium</h2>
+    <div class="price">₹999/mo</div>
+    <ul>
+      <li>✔ Unlimited Projects</li>
+      <li>✔ 24/7 Support</li>
+      <li>✔ Advanced Analytics</li>
+    </ul>
+    <button>Go Premium</button>
+  </div>
+
+</div>
+
+</body>
+</html>
