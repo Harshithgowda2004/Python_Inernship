@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Expense Tracker</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0f172a;
+      color: white;
+      display: flex;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      width: 400px;
+      background: #1e293b;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    .balance {
+      text-align: center;
+      margin: 20px 0;
+      font-size: 24px;
+    }
+
+    .summary {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .summary div {
+      width: 48%;
+      padding: 10px;
+      border-radius: 5px;
+      text-align: center;
+    }
+
+    .income {
+      background: #065f46;
+    }
+
+    .expense {
+      background: #7f1d1d;
+    }
+
+    input, button {
+      width: 100%;
+      padding: 10px;
+      margin: 5px 0;
+      border: none;
+      border-radius: 5px;
+    }
+
+    input {
+      background: #334155;
+      color: white;
+    }
+
+    button {
+      background: #3b82f6;
+      color: white;
+      cursor: pointer;
+    }
+
+    ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      background: #334155;
+      margin: 5px 0;
+      padding: 10px;
+      display: flex;
+      justify-content: space-between;
+      border-right: 5px solid;
+    }
+
+    .plus {
+      border-color: #22c55e;
+    }
+
+    .minus {
+      border-color: #ef4444;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>💰 Expense Tracker</h2>
+
+  <div class="balance">
+    Balance: ₹<span id="balance">0</span>
+  </div>
+
+  <div class="summary">
+    <div class="income">
+      Income: ₹<span id="income">0</span>
+    </div>
+    <div class="expense">
+      Expense: ₹<span id="expense">0</span>
+    </div>
+  </div>
+
+  <form id="form">
+    <input type="text" id="text" placeholder="Enter description" required>
+    <input type="number" id="amount" placeholder="Enter amount (+income, -expense)" required>
+    <button>Add Transaction</button>
+  </form>
+
+  <ul id="list"></ul>
+</div>
+
+<script>
+  const form = document.getElementById('form');
+  const text = document.getElementById('text');
+  const amount = document.getElementById('amount');
+  const list = document.getElementById('list');
+
+  const balanceEl = document.getElementById('balance');
+  const incomeEl = document.getElementById('income');
+  const expenseEl = document.getElementById('expense');
+
+  let transactions = [];
+
+  function updateValues() {
+    const amounts = transactions.map(t => t.amount);
+
+    const total = amounts.reduce((acc, item) => acc + item, 0);
+    const income = amounts.filter(a => a > 0).reduce((acc, item) => acc + item, 0);
+    const expense = amounts.filter(a => a < 0).reduce((acc, item) => acc + item, 0);
+
+    balanceEl.innerText = total.toFixed(2);
+    incomeEl.innerText = income.toFixed(2);
+    expenseEl.innerText = Math.abs(expense).toFixed(2);
+  }
+
+  function addTransactionDOM(transaction) {
+    const li = document.createElement('li');
+
+    li.classList.add(transaction.amount < 0 ? 'minus' : 'plus');
+
+    li.innerHTML = `
+      ${transaction.text}
+      <span>₹${transaction.amount}</span>
+    `;
+
+    list.appendChild(li);
+  }
+
+  function addTransaction(e) {
+    e.preventDefault();
+
+    const transaction = {
+      text: text.value,
+      amount: +amount.value
+    };
+
+    transactions.push(transaction);
+
+    addTransactionDOM(transaction);
+    updateValues();
+
+    text.value = '';
+    amount.value = '';
+  }
+
+  form.addEventListener('submit', addTransaction);
+</script>
+
+</body>
+</html>
